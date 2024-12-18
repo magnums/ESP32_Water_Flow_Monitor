@@ -93,14 +93,22 @@ void setup() {
   u8g2.sendBuffer();
   EEPROM.begin(512);
 
-  defaultUnitLimit = EEPROMReadFloat(EEPROM_UNIT_LIMIT_ADDR);
-  if (defaultUnitLimit <= 0 || defaultUnitLimit > 10000) {
-    defaultUnitLimit = 50;
-    EEPROMWriteFloat(EEPROM_UNIT_LIMIT_ADDR, defaultUnitLimit);
+ // Load stored water usage data
+  totalLiters = EEPROMReadFloat(EEPROM_TOTAL_LITERS_ADDR);
+  if (isnan(totalLiters) || totalLiters < 0) {
+    totalLiters = 0.0; // Set to 0 if data is invalid
   }
 
-  totalLiters = EEPROMReadFloat(EEPROM_TOTAL_LITERS_ADDR);
   monthlyLiters = EEPROMReadFloat(EEPROM_MONTHLY_LITERS_ADDR);
+  if (isnan(monthlyLiters) || monthlyLiters < 0) {
+    monthlyLiters = 0.0; // Set to 0 if data is invalid
+  }
+
+  defaultUnitLimit = EEPROMReadFloat(EEPROM_UNIT_LIMIT_ADDR);
+  if (defaultUnitLimit <= 0 || defaultUnitLimit > 10000) {
+    defaultUnitLimit = 50; // Reset to default if invalid
+    EEPROMWriteFloat(EEPROM_UNIT_LIMIT_ADDR, defaultUnitLimit);
+  }
 
   // Step 2: Display Connecting to Wi-Fi
   u8g2.clearBuffer();
